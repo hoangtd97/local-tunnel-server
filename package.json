@@ -1,6 +1,7 @@
 {
   "author": "Roman Shtylman <shtylman@gmail.com>",
   "name": "localtunnel-server",
+  "type": "module",
   "description": "expose localhost to the world",
   "version": "0.0.8",
   "license": "MIT",
@@ -28,7 +29,7 @@
   },
   "scripts": {
     "test": "mocha --check-leaks --require esm './**/*.test.js'",
-    "start": "./bin/server",
-    "dev": "node-dev bin/server --port 3000"
+    "start": "node ./bin/server",
+    "dev": "node-dev bin/server --port 8000 --domain localhost"
   }
 }
