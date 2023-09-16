@@ -1,0 +1,11 @@
+
+@host = http://tunnel.kubo.vn
+
+###  
+
+GET {{host}}
+
+###  
+
+GET {{host}}/api/status
+

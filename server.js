@@ -3,8 +3,13 @@ import Koa from 'koa';
 import tldjs from 'tldjs';
 import Debug from 'debug';
 import http from 'http';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
 import { hri } from 'human-readable-ids';
 import Router from 'koa-router';
+import serve from "koa-static";
+import send from "koa-send";
 
 import ClientManager from './lib/ClientManager.js';
 
@@ -15,7 +20,6 @@ export default function(opt) {
 
     const validHosts = (opt.domain) ? [opt.domain] : undefined;
     const myTldjs = tldjs.fromUserSettings({ validHosts });
-    const landingPage = opt.landing || 'https://localtunnel.github.io/www/';
 
     function GetClientIdFromHostname(hostname) {
         return myTldjs.getSubdomain(hostname);
@@ -27,6 +31,18 @@ export default function(opt) {
 
     const app = new Koa();
     const router = new Router();
+
+    router.get('/', async (ctx, next) => {
+      ctx.body = {
+        message: 'Hello'
+      };
+    });
+
+    router.get('/.well-known/acme-challenge/pnkTCMGc3gR5mFrXunmXPhz8424JvSDChCgYIusMV1k', async (ctx, next) => {
+      console.log('matched');
+      const file = fs.readFileSync(path.resolve('static', '.well-known/acme-challenge/pnkTCMGc3gR5mFrXunmXPhz8424JvSDChCgYIusMV1k'));
+      ctx.body = file.toString();
+    })
 
     router.get('/api/status', async (ctx, next) => {
         const stats = manager.stats;
@@ -51,6 +67,7 @@ export default function(opt) {
     });
 
     app.use(router.routes());
+    // app.use(serve(path.resolve('./static')));
     app.use(router.allowedMethods());
 
     // root endpoint
@@ -75,8 +92,9 @@ export default function(opt) {
             return;
         }
 
-        // no new client request, send to landing page
-        ctx.redirect(landingPage);
+        ctx.body = `[${(new Date()).toISOString()}] Hello`;
+
+        return;
     });
 
     // anything after the / path is a request for a specific client name
@@ -113,7 +131,19 @@ export default function(opt) {
         return;
     });
 
-    const server = http.createServer();
+    let server;
+
+    if (opt.secure) {
+      const privateKey = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn-0001/privkey.pem'), 'utf8');
+      const certificate = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn-0001/fullchain.pem'), 'utf8');
+      const credentials = { key: privateKey, cert: certificate };
+      server = https.createServer(credentials);
+      // console.log('privateKey', privateKey);
+      // console.log('certificate', certificate);
+    }
+    else {
+      server = http.createServer();
+    }
 
     const appCallback = app.callback();
 
@@ -131,6 +161,8 @@ export default function(opt) {
             appCallback(req, res);
             return;
         }
+
+        console.log('bug');
 
         const client = manager.getClient(clientId);
         if (!client) {
