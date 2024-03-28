@@ -1,3 +1,48 @@
+## For single domain: abc.com
+
+- use file validation
+
+```
+
+- run:
+
+  > sudo certbot certonly --manual -d tunnel.kubo.vn
+
+- edit server to response exactly file
+
+- restart server in http mode:
+
+  > sudo DEBUG=* node bin/server.js --port 80 --domain tunnel.kubo.vn > http.log 2>&1
+
+- press enter
+
+- restart server in https mode
+
+  > sudo systemctl restart localtunnel
+
+```
+
+## For wildcard domain: *.abc.com
+
+- use DNS record:
+
+```
+- run: 
+
+  > sudo certbot certonly --manual -d *.tunnel.kubo.vn
+
+- add DNS record to domain
+
+- press enter
+
+- restart server
+
+  > sudo systemctl restart localtunnel
+
+```
+
+## Other info
+
 To use Certbot with manual DNS record addition on Ubuntu, you can follow these steps to obtain an SSL/TLS certificate for your domain:
 
 1. **Install Certbot:**
