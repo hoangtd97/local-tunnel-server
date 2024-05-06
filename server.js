@@ -1,4 +1,3 @@
-import log from 'book';
 import Koa from 'koa';
 import tldjs from 'tldjs';
 import Debug from 'debug';
@@ -8,8 +7,6 @@ import fs from 'fs';
 import path from 'path';
 import { hri } from 'human-readable-ids';
 import Router from 'koa-router';
-import serve from "koa-static";
-import send from "koa-send";
 
 import ClientManager from './lib/ClientManager.js';
 
