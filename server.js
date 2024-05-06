@@ -134,8 +134,8 @@ export default function(opt) {
     let server;
 
     if (opt.secure) {
-      const privateKey = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn-0001/privkey.pem'), 'utf8');
-      const certificate = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn-0001/fullchain.pem'), 'utf8');
+      const privateKey = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn/privkey.pem'), 'utf8');
+      const certificate = fs.readFileSync(path.resolve('/etc/letsencrypt/live/tunnel.kubo.vn/fullchain.pem'), 'utf8');
       const credentials = { key: privateKey, cert: certificate };
       server = https.createServer(credentials);
       // console.log('privateKey', privateKey);
